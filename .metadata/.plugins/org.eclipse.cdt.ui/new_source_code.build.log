@@ -1,0 +1,9 @@
+18:13:17 **** Incremental Build of configuration Nios II for project new_source_code ****
+wsl make all 
+Info: Building /mnt/c/Users/kedic/Desktop/em023_mucilage/software/new_source_code_bsp/
+make --no-print-directory -C /mnt/c/Users/kedic/Desktop/em023_mucilage/software/new_source_code_bsp/
+[BSP build complete]
+[new_source_code build complete]
+
+18:13:18 Build Finished (took 1s.648ms)
+

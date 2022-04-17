@@ -1,0 +1,132 @@
+/* these test were created to show how to use the opencores I2C along with a driver found in
+ * the I2C_opencores component to talk to various components. 
+ * This test example uses a littel daughter board from microtronix
+ * it has a I2c to parallel chip (PCA9554A) a EEPORM and real time clock. 
+ * I chose not to impliment the real time clock. 
+ * But you can see how the calls work
+ * There are only 4 functions associalted with the I2C driver
+ * I2C start  -  send start bit and address of the chip
+ * I2C_read - read data
+ * I2C_write. - write data
+ * how and when each of these get used is based on the device you
+ * are talking to. 
+ * See the driver code for details of each function. 
+ * */
+#include <stdio.h>
+#include "system.h"
+#include "terasic_includes.h"
+#include "water_sensor.h"
+
+#define NUMBYTESSIZE 16
+#define WRITE 0
+#define READ 1
+#define I2CA_BASE 0x4Cu
+int main() {
+	int data;
+	//uint8_t data_2;
+/*	alt_u32 timeout;
+	uint8_t numbytes[NUMBYTESSIZE];
+	//alt_u8 numbytes[NUMBYTESSIZE];
+//	unsigned int tempError;
+
+	alt_u8 Slave_Rx_Buffer[200] = {0};
+	alt_u8 Slave_Rx_Index = 0;
+	char    tempChar = 0;
+	bool exitloop = false;
+*/
+//	alt_u32 I2CA_BASE = WATER_I2C_OPENCORES_BASE;
+	// testing the PCA9554A paralle interface
+	// this writes a 5 to the leds and read the position of the dip switches.
+	printf(" CODE IS STARTED IN I2C_TEST.C \n");
+	// address 0x4Cu
+	// set the frequency that you want to run at
+	// most devices work at 100Khz  some faster
+	Water_I2C_init(I2CA_BASE, ALT_CPU_FREQ, 100000);
+
+/*	Water_I2C_init(I2CA_BASE, ALT_CPU_FREQ, 100000);
+	// for the parallel io only the first 4 are output s
+
+	// the PCA9554A   uses a command word right after the chip address word ( the start work)
+	Water_I2C_start(I2CA_BASE, 0x4Cu, 0); // chip address in write mode
+	Water_I2C_write(I2CA_BASE, 3, 0);  // write to register 3 command
+	Water_I2C_write(I2CA_BASE, 0xf0, 1); // set the bottom 4 bits to outputs for the LEDs set the stop
+
+	// now right to the leds
+	Water_I2C_start(I2CA_BASE, 0x4Cu, 0); // address the chip in write mode
+	Water_I2C_write(I2CA_BASE, 1, 0); // set command to the pca9554 to be output register
+	Water_I2C_write(I2CA_BASE, 5, 1); // write the data to the output register and set the stop
+
+	//now read the dip switches
+	// first set the command to 0
+	Water_I2C_start(I2CA_BASE, 0x4Cu, 0); //address the chip in write mode
+	data = Water_I2C_write(I2CA_BASE, 0, 0); // set command to read input register.
+	Water_I2C_start(I2CA_BASE, 0x4Cu, 1); //send start again but this time in read mode
+	data = Water_I2C_read(I2CA_BASE, 1); // read the input register and send stop
+	data = 0xff & (data >> 4);
+	printf("dip switch 0x%x\n", data);
+*/
+
+	//0 write, 1 read
+
+	Water_I2C_start(I2CA_BASE, 0x4Cu, 0); //send start again but this time in read mode
+	data= Water_I2C_write(I2CA_BASE,0,0);
+	Water_I2C_start(I2CA_BASE, 0x4Cu, 1);
+	data =  Water_I2C_read(I2CA_BASE,1);  // read the input register and send stop
+	data = 0xff & (data >>4);
+	printf("dip switch 0x%x\n",data);
+//	uint32_t new_data=0;
+//	uint32_t new_data2=0;
+//	data = Water_I2C_read(I2CA_BASE, 1); // read the input register and send stop
+//	printf("cikis");
+//	data = 0xff & (data >> 4);
+/*	for(int i = 0; i < NUMBYTESSIZE; i++){
+		numbytes[i] = 0;
+	}*/
+//	numbytes =0;
+/*	uint32_t i=0;
+	//uint32_t x= 0;
+	//data_2= I2CReadWrite(READ, BYTES_TO_READ, numbytes, 1);
+	new_data = Water_I2C_read(BYTES_TO_READ, 0);
+	printf("FIRST NEW DATA IS ", new_data);
+	printf(" \n");
+	numbytes[i++]=new_data;
+//	int size_num =sizeof(numbytes);
+//	myI2CReadWrite(READ, BYTES_TO_READ, (uint8_t *)&numbytes, 1); //numbytes can be 0 to 255, but there can be more than 255 bytes in slave buffer
+	usleep(100);
+	while (i > 0) { //data available
+		printf("giris \n");
+		//tempError = myI2CReadWrite(READ, BYTES_TO, &Slave_Rx_Buffer[0], numbytes);
+	//	tempError = Water_I2C_read(BYTES_TO,1);
+	//	Slave_Rx_Buffer[x++]=tempError;
+	//	printf("temperror = " , tempError);
+	//	if (tempError != SENSOR_ERROR_NONE) {
+	//		printf("Error reading from sensor");
+	//	}
+		usleep(10);
+		for (Slave_Rx_Index = 0; Slave_Rx_Index < i; Slave_Rx_Index++) {
+			tempChar = Slave_Rx_Buffer[Slave_Rx_Index];
+			Slave_Rx_Buffer[Slave_Rx_Index] = '\0'; //clean buffer
+			if (tempChar == '~') {
+				exitloop = true;
+			}
+			else { //end message character received
+				printf((const char *)&tempChar);
+			}
+		}
+	//	myI2CReadWrite(READ, BYTES_TO_READ, (uint8_t *)&numbytes,1);
+		new_data = Water_I2C_read(BYTES_TO_READ, 0);
+		printf("LAST NEW DATA IS ", new_data);
+		printf(" \n");
+		numbytes[i++]=new_data;
+		usleep(5);
+	}// end data available while loop
+	usleep(100);
+	timeout--;
+	while (timeout > 0 && !exitloop);
+	if (timeout == 0) {
+		printf("Slave timeout.");
+	}
+	usleep(10); */
+} //end slave command loop
+//end command received loop*/
+

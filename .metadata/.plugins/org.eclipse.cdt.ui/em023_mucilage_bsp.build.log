@@ -1,0 +1,6 @@
+04:30:02 **** Incremental Build of configuration Nios II for project em023_mucilage_bsp ****
+wsl make all 
+[BSP build complete]
+
+04:30:02 Build Finished (took 562ms)
+
