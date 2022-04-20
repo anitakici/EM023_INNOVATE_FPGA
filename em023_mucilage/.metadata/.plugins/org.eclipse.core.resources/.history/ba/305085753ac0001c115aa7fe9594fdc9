@@ -1,0 +1,85 @@
+/* these test were created to show how to use the opencores I2C along with a driver found in
+ * the I2C_opencores component to talk to various components. 
+ * This test example uses a littel daughter board from microtronix
+ * it has a I2c to parallel chip (PCA9554A) a EEPORM and real time clock. 
+ * I chose not to impliment the real time clock. 
+ * But you can see how the calls work
+ * There are only 4 functions associalted with the I2C driver
+ * I2C start  -  send start bit and address of the chip
+ * I2C_read - read data
+ * I2C_write. - write data
+ * how and when each of these get used is based on the device you
+ * are talking to. 
+ * See the driver code for details of each function. 
+ * */
+#include <stdio.h>
+#include "system.h"
+#include "terasic_includes.h"
+#include "water_sensor.h"
+
+#define NUMBYTESSIZE 16
+#define WRITE 0
+#define READ 1
+
+
+
+int main() {
+	alt_u16 timeout=0;
+	bool exitloop = false;
+	uint8_t tempError;
+	uint8_t numbytes;
+	uint8_t Slave_Rx_Buffer[200] = {0};
+	uint8_t Slave_Rx_Index = 0;
+	char    tempChar = 0;
+	alt_u32 I2CA_BASE = WATER_I2C_OPENCORES_BASE;
+
+	Water_I2C_init(I2CA_BASE, ALT_CPU_FREQ, 100000);
+
+	timeout = 600;
+	exitloop = false;
+
+	do{
+		usleep(185000);
+		numbytes =0;
+		myI2CReadWrite(READ, BYTES_TO_READ, (alt_u8 *)&numbytes, 1); //numbytes can be 0 to 255, but there can be more than 255 bytes in slave buffer
+		usleep(5000);
+
+		while (numbytes > 0) { //data available
+			tempError = myI2CReadWrite(READ, BYTES_TO, &Slave_Rx_Buffer[0], numbytes);
+			if (tempError != 0) {
+				printf("Error reading from sensor");
+			}
+			usleep(10000);
+
+			for (Slave_Rx_Index = 0; Slave_Rx_Index < numbytes; Slave_Rx_Index++) {
+				tempChar = Slave_Rx_Buffer[Slave_Rx_Index];
+				Slave_Rx_Buffer[Slave_Rx_Index] = '\0'; //clean buffer
+				if (tempChar == '~') {
+					exitloop = true;
+				}
+				else { //end message character received
+					printf((const char *)&tempChar);
+				}
+
+			}
+	//		Slave_Rx_Index =Slave_Rx_Index+1;
+			Slave_Rx_Buffer[Slave_Rx_Index] = '\0';
+			myI2CReadWrite(READ, BYTES_TO_READ, (alt_u8 *)&numbytes,1);
+
+			usleep(5000);
+		}// end data available while loop
+
+		usleep(100);
+		timeout--;
+
+	}while (timeout > 0 && !exitloop);
+	if (timeout == 0) {
+		printf("Slave timeout.");
+	}
+	usleep(100000);
+}
+
+
+
+
+

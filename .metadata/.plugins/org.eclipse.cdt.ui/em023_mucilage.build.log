@@ -1,9 +1,0 @@
-04:30:03 **** Incremental Build of configuration Nios II for project em023_mucilage ****
-wsl make all 
-Info: Building /mnt/c/Users/kedic/Desktop/em023_mucilage/software/em023_mucilage_bsp/
-make --no-print-directory -C /mnt/c/Users/kedic/Desktop/em023_mucilage/software/em023_mucilage_bsp/
-[BSP build complete]
-[em023_mucilage build complete]
-
-04:30:04 Build Finished (took 1s.282ms)
-

@@ -1,0 +1,21 @@
+21:00:44 **** Build of configuration Nios II for project em023_mucilage ****
+wsl make mem_init_generate 
+Info: Building /mnt/c/Users/kedic/Desktop/em023_mucilage/software/em023_mucilage_bsp/
+make --no-print-directory -C /mnt/c/Users/kedic/Desktop/em023_mucilage/software/em023_mucilage_bsp/
+[BSP build complete]
+Post-processing to create mem_init/top_qsys_nios_system_onchip_memory2.hex...
+elf2hex.exe em023_mucilage.elf 0x00020000 0x0003ffff --width=32 --little-endian-mem --create-lanes=0 mem_init/top_qsys_nios_system_onchip_memory2.hex
+Post-processing to create mem_init/top_qsys_nios_system_shared_memory.hex...
+elf2hex.exe em023_mucilage.elf 0x00002000 0x00002fff --width=32 --little-endian-mem --create-lanes=0 mem_init/top_qsys_nios_system_shared_memory.hex
+Post-processing to create mem_init/hdl_sim/top_qsys_nios_system_onchip_memory2.dat...
+elf2dat --infile=em023_mucilage.elf --outfile=mem_init/hdl_sim/top_qsys_nios_system_onchip_memory2.dat \
+	--base=0x00020000 --end=0x0003ffff --width=32 \
+	--little-endian-mem --create-lanes=0 
+Post-processing to create mem_init/hdl_sim/top_qsys_nios_system_shared_memory.dat...
+elf2dat --infile=em023_mucilage.elf --outfile=mem_init/hdl_sim/top_qsys_nios_system_shared_memory.dat \
+	--base=0x00002000 --end=0x00002fff --width=32 \
+	--little-endian-mem --create-lanes=0 
+Post-processing to create mem_init/hdl_sim/top_qsys_nios_system_onchip_memory2.sym...
+nios2-elf-nm.exe -n em023_mucilage.elf > mem_init/hdl_sim/top_qsys_nios_system_onchip_memory2.sym
+Post-processing to create mem_init/hdl_sim/top_qsys_nios_system_shared_memory.sym...
+nios2-elf-nm.exe -n em023_mucilage.elf > mem_init/hdl_sim/top_qsys_nios_system_shared_memory.sym
